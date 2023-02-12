@@ -20,6 +20,7 @@ public class FlightRadarService {
             (f => f.InstanceId == flight.InstanceId & f.WorldId == flight.WorldId & f.Registration == flight.Registration & f.Callsign == flight.Callsign);
 
         if (index != -1) {
+            flight.Id = _flights[index].Id;
             _flights[index] = flight;
             _logger.LogInformation("Flight Update: {FlightData}", flight);
             return;

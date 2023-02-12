@@ -20,7 +20,7 @@ public class VRChatUser {
 }
 
 public class VRChatUserDetail : VRChatUser {
-    [JsonPropertyName("last_activity")] public DateTimeOffset LastActivity { get; set; }
+    //[JsonPropertyName("last_activity")] public DateTimeOffset LastActivity { get; set; }
     [JsonPropertyName("worldId")] public string WorldId { get; set; }
     [JsonPropertyName("instanceId")] public string InstanceId { get; set; }
     [JsonPropertyName("location")] public string Location { get; set; }

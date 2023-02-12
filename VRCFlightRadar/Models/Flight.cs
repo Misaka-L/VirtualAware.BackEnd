@@ -12,5 +12,6 @@ public record Flight(
     int Heading,
     int Groundspeed) {
 
+    public Guid Id { get; set; } = Guid.NewGuid();
     public DateTimeOffset LastedUpdate = DateTimeOffset.Now;
 }

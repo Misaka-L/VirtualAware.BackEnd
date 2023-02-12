@@ -15,9 +15,12 @@ public class ExceptionFilter : IExceptionFilter {
         _logger.LogError(context.Exception, "Exception occured when {ClientIP} {Method} {Path}{Query}",
             context.HttpContext.Connection.RemoteIpAddress, context.HttpContext.Request.Method, context.HttpContext.Request.Path, context.HttpContext.Request.QueryString);
 
-        context.Result = new JsonResult(new ExceptionResponse {
+        var result = new JsonResult(new ExceptionResponse {
             Message = context.Exception.Message,
             Exception = context.Exception.ToString()
         });
+
+        result.StatusCode = 500;
+        context.Result = result;
     }
 }

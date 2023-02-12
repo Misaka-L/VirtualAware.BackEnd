@@ -8,57 +8,50 @@ namespace VRCFlightRadar.Controllers;
 [Route("vrchat")]
 public class VRChatHelperController : ControllerBase {
     private readonly IVRChatApi _vrchatApi;
+    private readonly ILogger<VRChatHelperController> _logger;
 
-    public VRChatHelperController(IVRChatApi vrchatApi) {
+    public VRChatHelperController(IVRChatApi vrchatApi, ILogger<VRChatHelperController> logger) {
         _vrchatApi = vrchatApi;
+        _logger = logger;
     }
 
     [HttpGet]
     [Route("{username}/activity")]
     public async ValueTask<ActionResult<VRChatActivity>> GetActivityByUsername(string username) {
-        var users = await _vrchatApi.SearchUsers(username);
-
-        if (users.Find(user => user.DisplayName == username) is VRChatUser user) {
-            var userDetail = await _vrchatApi.GetUser(user.Id);
-            if (getActivity(userDetail) is VRChatActivity activity)
+        try {
+            var detail = await getUserDetailAsync(username);
+            if (getActivity(detail) is VRChatActivity activity) {
                 return activity;
+            }
+        } catch { }
 
-            return NoContent();
-        }
-
-        return NotFound();
+        return NoContent();
     }
 
     [HttpGet]
     [Route("{username}/activity/instance")]
     public async ValueTask<ActionResult<string>> GetInstanceActivityByUsername(string username) {
-        var users = await _vrchatApi.SearchUsers(username);
-
-        if (users.Find(user => user.DisplayName == username) is VRChatUser user) {
-            var userDetail = await _vrchatApi.GetUser(user.Id);
-            if (getActivity(userDetail) is VRChatActivity activity)
+        try {
+            var detail = await getUserDetailAsync(username);
+            if (getActivity(detail) is VRChatActivity activity) {
                 return activity.InstanceId;
+            }
+        } catch { }
 
-            return NoContent();
-        }
-
-        return NotFound();
+        return NoContent();
     }
 
     [HttpGet]
     [Route("{username}/activity/world")]
     public async ValueTask<ActionResult<string>> GetWorldActivityByUsername(string username) {
-        var users = await _vrchatApi.SearchUsers(username);
-
-        if (users.Find(user => user.DisplayName == username) is VRChatUser user) {
-            var userDetail = await _vrchatApi.GetUser(user.Id);
-            if (getActivity(userDetail) is VRChatActivity activity)
+        try {
+            var detail = await getUserDetailAsync(username);
+            if (getActivity(detail) is VRChatActivity activity) {
                 return activity.WorldId;
+            }
+        } catch { }
 
-            return NoContent();
-        }
-
-        return NotFound();
+        return NoContent();
     }
 
     private VRChatActivity? getActivity(VRChatUserDetail userDetail) {
@@ -74,5 +67,27 @@ public class VRChatHelperController : ControllerBase {
         } catch {
             return null;
         }
+    }
+
+    private async ValueTask<VRChatUserDetail> getUserDetailAsync(string username) {
+        List<VRChatUser> users;
+        try {
+            users = await _vrchatApi.SearchUsers(username);
+        } catch (Exception ex) {
+            _logger.LogError(ex, "Exception occured when search user.");
+            throw new Exception("UnableSerachUser", ex);
+        }
+
+        if (users.Find(user => user.DisplayName == username) is VRChatUser user) {
+            try {
+                var userDetail = await _vrchatApi.GetUser(user.Id);
+                return userDetail;
+            } catch (Exception ex) {
+                _logger.LogError(ex, "Exception occured when get user detail.");
+                throw new Exception("UnableGetUserDetail", ex);
+            }
+        }
+
+        throw new Exception("UserNotFound");
     }
 }
