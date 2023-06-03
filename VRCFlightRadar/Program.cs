@@ -30,12 +30,6 @@ builder.Services.AddSwaggerGen();
 // Options
 builder.Services.Configure<VRChatApiOption>(builder.Configuration.GetSection("VRChat"));
 
-// VRChat Api Services
-builder.Services.AddTransient<VRChatApiHandler>();
-builder.Services.AddRefitClient<IVRChatApi>()
-    .ConfigureHttpClient(client => client.BaseAddress = new Uri("https://api.vrchat.cloud/api/1"))
-    .AddHttpMessageHandler<VRChatApiHandler>();
-
 // FlightRadar
 builder.Services.AddSingleton<FlightRadarService>();
 
