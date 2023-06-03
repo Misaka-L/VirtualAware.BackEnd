@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using VRCFlightRadar.Models;
+using VirtualAware.BackEnd.Api.Models;
 
-namespace VRCFlightRadar.Filters;
+namespace VirtualAware.BackEnd.Api.Filters;
 
 public class ExceptionFilter : IExceptionFilter {
     private readonly ILogger<ExceptionFilter> _logger;
@@ -18,9 +18,11 @@ public class ExceptionFilter : IExceptionFilter {
         var result = new JsonResult(new ExceptionResponse {
             Message = context.Exception.Message,
             Exception = context.Exception.ToString()
-        });
+        })
+        {
+            StatusCode = 500
+        };
 
-        result.StatusCode = 500;
         context.Result = result;
     }
 }

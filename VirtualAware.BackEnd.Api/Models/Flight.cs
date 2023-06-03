@@ -1,4 +1,4 @@
-﻿namespace VRCFlightRadar.Models;
+﻿namespace VirtualAware.BackEnd.Api.Models;
 
 public record Flight(
     string Callsign,

@@ -1,17 +1,15 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
-using System.Text.Json;
-using VRCFlightRadar.Models;
+﻿using VirtualAware.BackEnd.Api.Models;
 
-namespace VRCFlightRadar.Services;
+namespace VirtualAware.BackEnd.Api.Services;
 
 public class FlightRadarService {
     private readonly List<Flight> _flights = new List<Flight>();
     private Timer _timer;
 
-    private ILogger<FlightRadarService> _logger;
+    private readonly ILogger<FlightRadarService> _logger;
 
     public FlightRadarService(ILogger<FlightRadarService> logger) {
-        _timer = new Timer(new TimerCallback(tick), null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
+        _timer = new Timer(Tick, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
         _logger = logger;
     }
 
@@ -37,7 +35,7 @@ public class FlightRadarService {
     public List<Flight> GetAllFlights(string instanceId, string worldId) =>
         _flights.Where(flight => flight.InstanceId == instanceId & flight.WorldId == worldId).ToList();
 
-    private void tick(object state) {
+    private void Tick(object? state) {
         _flights.RemoveAll(flight => DateTimeOffset.Now.ToUnixTimeSeconds() - flight.LastedUpdate.ToUnixTimeSeconds() > 10);
     }
 }

@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using VRCFlightRadar.Models;
-using VRCFlightRadar.Services;
+﻿using Microsoft.AspNetCore.Mvc;
+using VirtualAware.BackEnd.Api.Models;
+using VirtualAware.BackEnd.Api.Services;
 
-namespace VRCFlightRadar.Controllers;
+namespace VirtualAware.BackEnd.Api.Controllers;
 [Route("flightradar")]
 [ApiController]
 public class FlightRadarController : ControllerBase {
@@ -16,28 +15,28 @@ public class FlightRadarController : ControllerBase {
     [HttpGet, HttpPost]
     [Route("track")]
     public IActionResult Track(
-        string Callsign,
-        string TypeCode,
-        string Registration,
-        string InstanceId,
-        string WorldId,
-        float Latitude,
-        float Longitude,
-        int Altitude,
-        int Heading,
-        int Groundspeed) {
+        string callsign,
+        string typeCode,
+        string registration,
+        string instanceId,
+        string worldId,
+        float latitude,
+        float longitude,
+        int altitude,
+        int heading,
+        int groundspeed) {
 
         var flight = new Flight(
-            Callsign: Callsign,
-            TypeCode: TypeCode,
-            Registration: Registration,
-            InstanceId: InstanceId,
-            WorldId: WorldId,
-            Latitude: Latitude,
-            Longitude: Longitude,
-            Altitude: Altitude,
-            Heading: Heading,
-            Groundspeed: Groundspeed
+            Callsign: callsign,
+            TypeCode: typeCode,
+            Registration: registration,
+            InstanceId: instanceId,
+            WorldId: worldId,
+            Latitude: latitude,
+            Longitude: longitude,
+            Altitude: altitude,
+            Heading: heading,
+            Groundspeed: groundspeed
         );
 
         _flightRadarService.TrackFlight(flight);
@@ -47,8 +46,8 @@ public class FlightRadarController : ControllerBase {
     [HttpGet]
     [Route("list")]
     public ActionResult<List<Flight>> List(string? instanceId = null, string? worldId = null) {
-        if (worldId is string world) {
-            if (instanceId is string instance) {
+        if (worldId is { } world) {
+            if (instanceId is { } instance) {
                 return _flightRadarService.GetAllFlights(instance, world);
             }
 

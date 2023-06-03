@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace VRCFlightRadar.Models;
+namespace VirtualAware.BackEnd.Api.Models;
 
 public class ExceptionResponse {
     [JsonPropertyName("message")] public string Message { get; set; }
