@@ -12,7 +12,7 @@ public class FlightRadarController : ControllerBase {
         _flightRadarService = flightRadarService;
     }
 
-    [HttpGet, HttpPost]
+    [HttpPost]
     [Route("track")]
     public IActionResult Track(
         string callsign,
@@ -45,15 +45,29 @@ public class FlightRadarController : ControllerBase {
 
     [HttpGet]
     [Route("list")]
-    public ActionResult<List<Flight>> List(string? instanceId = null, string? worldId = null) {
+    public ActionResult<IReadOnlyList<Flight>> List(string? instanceId = null, string? worldId = null) {
         if (worldId is { } world) {
             if (instanceId is { } instance) {
-                return _flightRadarService.GetAllFlights(instance, world);
+                return Ok(_flightRadarService.GetAllFlights(instance, world));
             }
 
-            return _flightRadarService.GetAllFlights(world);
+            return Ok(_flightRadarService.GetAllFlights(world));
         }
 
-        return _flightRadarService.GetAllFlights();
+        return Ok(_flightRadarService.GetAllFlights());
+    }
+
+    [HttpGet]
+    [Route("worlds")]
+    public ActionResult<IReadOnlyList<string>> ListWorlds()
+    {
+        return Ok(_flightRadarService.GetAllWorlds());
+    }
+
+    [HttpGet]
+    [Route("instances")]
+    public ActionResult<List<string>> ListInstance(string worldId)
+    {
+        return Ok(_flightRadarService.GetAllInstances(worldId));
     }
 }

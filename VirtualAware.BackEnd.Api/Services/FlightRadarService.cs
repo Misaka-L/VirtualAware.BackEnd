@@ -28,12 +28,20 @@ public class FlightRadarService {
         _logger.LogInformation("Flight Added: {FlightData}", flight);
     }
 
-    public List<Flight> GetAllFlights() =>
-        _flights;
-    public List<Flight> GetAllFlights(string worldId) =>
-    _flights.Where(flight => flight.WorldId == worldId).ToList();
-    public List<Flight> GetAllFlights(string instanceId, string worldId) =>
-        _flights.Where(flight => flight.InstanceId == instanceId & flight.WorldId == worldId).ToList();
+    public IReadOnlyList<Flight> GetAllFlights() =>
+        _flights.AsReadOnly();
+    public IReadOnlyList<Flight> GetAllFlights(string worldId) =>
+    _flights.Where(flight => flight.WorldId == worldId).ToList().AsReadOnly();
+    public IReadOnlyList<Flight> GetAllFlights(string instanceId, string worldId) =>
+        _flights.Where(flight => flight.InstanceId == instanceId & flight.WorldId == worldId).ToList().AsReadOnly();
+
+    public IReadOnlyList<string> GetAllWorlds() =>
+        _flights.GroupBy(flight => flight.WorldId).Select(group => group.First().WorldId).ToList().AsReadOnly();
+
+    public IReadOnlyList<string> GetAllInstances(string worldId) =>
+        _flights.Where(flight => flight.WorldId == worldId).GroupBy(flight => flight.InstanceId)
+            .Select(group => group.First().InstanceId)
+            .ToList().AsReadOnly();
 
     private void Tick(object? state) {
         _flights.RemoveAll(flight => DateTimeOffset.Now.ToUnixTimeSeconds() - flight.LastedUpdate.ToUnixTimeSeconds() > 10);
